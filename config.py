@@ -9,10 +9,16 @@ class Config:
     
     # PostgreSQL configuration
     DATABASE_URL = os.environ.get('DATABASE_URL', '')
-    if DATABASE_URL and DATABASE_URL.startswith('postgres://'):
-        DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
     
-    SQLALCHEMY_DATABASE_URI = DATABASE_URL or 'postgresql://postgres:Ankit%401245@localhost:5432/bookifyme'
+    # Handle both postgres:// and postgresql:// URLs for Render
+    if DATABASE_URL:
+        if DATABASE_URL.startswith('postgres://'):
+            DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
+        SQLALCHEMY_DATABASE_URI = DATABASE_URL
+    else:
+        # Local development fallback
+        SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:Ankit%401245@localhost:5432/bookifyme'
+    
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # JWT Configuration
