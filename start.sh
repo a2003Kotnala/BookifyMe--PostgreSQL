@@ -5,4 +5,4 @@ echo "🔧 Running database setup..."
 python database_setup.py
 
 echo "🐍 Starting Gunicorn server..."
-gunicorn --bind 0.0.0.0:$PORT wsgi:app
+exec gunicorn --bind 0.0.0.0:5000 wsgi:app
