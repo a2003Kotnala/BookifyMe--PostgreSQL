@@ -25,7 +25,7 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour
     
     # Google Books API
-    GOOGLE_BOOKS_API_KEY = os.environ.get('GOOGLE_BOOKS_API_KEY') or 'your-google-books-api-key'
+    GOOGLE_BOOKS_API_KEY = os.environ.get('GOOGLE_BOOKS_API_KEY') or 'AIzaSyDfWNJLVlecyOYbfDtce7BQwmbO0zg9QBc'
     GOOGLE_BOOKS_BASE_URL = 'https://www.googleapis.com/books/v1/volumes'
     
     # CORS
@@ -37,3 +37,25 @@ class Config:
     SMTP_USERNAME = os.environ.get('SMTP_USERNAME')
     SMTP_PASSWORD = os.environ.get('SMTP_PASSWORD')
     FROM_EMAIL = os.environ.get('FROM_EMAIL', 'noreply@bookifyme.com')
+
+# Debug: Print database configuration (safe version - hides password)
+def debug_database_config():
+    config = Config()
+    db_uri = config.SQLALCHEMY_DATABASE_URI
+    if db_uri:
+        # Hide password in logs for security
+        safe_uri = db_uri
+        if '@' in db_uri:
+            parts = db_uri.split('@')
+            user_part = parts[0]
+            if ':' in user_part:
+                user_pass = user_part.split(':')
+                if len(user_pass) >= 3:  # postgresql://user:pass@host
+                    safe_uri = f"postgresql://{user_pass[0]}:****@{parts[1]}"
+        print(f"🔧 Database Config: {safe_uri}")
+        print(f"🔧 Using DATABASE_URL: {'Yes' if os.environ.get('DATABASE_URL') else 'No'}")
+    return config
+
+# Run debug when module is loaded directly
+if __name__ == '__main__':
+    debug_database_config()
